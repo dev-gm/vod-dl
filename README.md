@@ -5,7 +5,7 @@ A highly customizable and fast command line program to download twitch vods
 
      vod-dl [OPTIONS]
 
-    Options:\n
+    Options:
      -g GAMES         games you want the vods to have (optional, default is any)
 
      -s STREAMERS     the streamers whose vods you want to download, you can 
