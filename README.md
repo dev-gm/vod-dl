@@ -29,4 +29,6 @@ A highly customizable and fast command line program to download twitch vods
                       to choose from this specify all for streamers (optional, default is config.xml 
                       in current directory)
 
-     -h               display this help message and exit^^^
+     -h               display this help message and exit
+     
+     ^^^
