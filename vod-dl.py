@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os, sys, shutil
 from xml.dom import minidom
 from datetime import date, datetime, timedelta
