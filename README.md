@@ -1,7 +1,6 @@
 # vod-dl
 A highly customizable and fast command line program to download twitch vods
-^^^
-
+```
      Usage:
 
      vod-dl [OPTIONS]
@@ -30,3 +29,4 @@ A highly customizable and fast command line program to download twitch vods
                       in current directory)
 
      -h               display this help message and exit
+```
