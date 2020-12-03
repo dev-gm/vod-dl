@@ -1,27 +1,7 @@
 #!/usr/bin/env python
 import os, sys, shutil
+from xml.dom import minidom
 from datetime import date, datetime, timedelta
-
-channels = [
-    'michaelreeves',
-    'ludwig',
-    'baboabe',
-    'lilypichu',
-    'valkyrae',
-    'disguisedtoast',
-    'kkatamina',
-    'sykkuno',
-    'itshafu',
-    'peterparktv',
-    'masayoshi',
-    'fuslie',
-    'quarterjade',
-    'yvonnie',
-    'itsryanhiga',
-    'nasumiii',
-    'tinakitten',
-    'eajparkofficial'
-]
 
 def display_help(error=''):
     if error:
@@ -39,8 +19,20 @@ def display_help(error=''):
                       medium, low (optional, default is you have to choose)\n
      -m FILETYPE      the filetype of the vods you want to download (optional,
                       default is mp4)\n
+     -c CONFIG        the xml file(s) that include the streamers whose vods you want to 
+                      download from, it is a more permanent and shortened version of streamers,
+                      to choose from this specify all for streamers (optional, default is config.xml
+                      in current directory)\n
      -h               display this help message and exit\n''')
     sys.exit()
+
+def get_channels(filename):
+    try:
+        file = minidom.parse(os.path.join(os.getcwd(), filename))
+    except IOError:
+        return None
+    channels = file.getElementsByTagName('channel')
+    return channels
 
 def check_args(input, all):
     games = []
@@ -54,6 +46,7 @@ def check_args(input, all):
     quality_count = 0
     filetype_count = 0
     date_count = 0
+    all = []
     qualities = {'high':'source', 'medium':'720', 'low':'480'}
     option = 's'
     for arg in input:
@@ -70,15 +63,14 @@ def check_args(input, all):
                 quality = qualities[arg]
                 quality_count += 1
             elif option == 'f':
-                if arg[-1] != '/':
-                    folder = arg + '/'
-                else:
-                    folder = arg
+                folder = arg
             elif option == 'm':
                 if filetype_count >= 1:
                     display_help('Entered more than one argument for filetypes! Incorrect usage!')
                 filetype = arg
                 filetype_count += 1
+            elif option == 'c':
+                all.extend(get_streamers(arg))
             elif option == 'd':
                 if date_count >= 1:
                     display_help('Entered more than one argument for date! Incorrect usage!')
@@ -93,6 +85,8 @@ def check_args(input, all):
             display_help()
         elif option not in 'sgqfmd':
             display_help('Entered an incorrect option! Incorrect usage!')
+    if not configs:
+        all = get_streamers('config.xml')
     if 'all' in streamers or not streamers:
         streamers = all
     return streamers, games, folder, day, quality, filetype
@@ -103,7 +97,7 @@ def get_raw_vods(streamers, games, folder):
     for game in games:
         search += f'--game "{game}"'
     for streamer in streamers:
-        filename = f'{folder}tmp/{streamer}.txt'
+        filename = os.path.join(folder, 'tmp/', 'streamer')
         os.system(f'twitch-dl videos {search} {streamer} > {filename}')
         with open(filename, 'r') as file:
             results[streamer] = file.read().split('\n')
@@ -131,8 +125,8 @@ def download_vods(vods, quality, filetype, folder):
     os.chdir(folder)
     for streamer, vod in vods.items():
         if quality:
-            temp_quality = '-q ' + quality
-        os.system(f'TMP={folder}/tmp twitch-dl download {temp_quality} -f {filetype} {vod}')
+            quality_arg = '-q ' + quality
+        os.system(f'TMP={os.path.join(folder, 'tmp/')} twitch-dl download {quality_arg} -f {filetype} {vod}')
         print(f'DONE WITH DOWNLOADING {vod}')
 
 def make_folder(folder):
@@ -143,11 +137,11 @@ def erase_folder(folder):
     make_folder(folder)
     for filename in os.listdir(folder):
         if not filename.endswith('.kdenlive'):
-            os.remove(f'{folder}/{filename}')
+            os.remove(os.path.join(folder, filename))
 
 if __name__ == '__main__':
     streamers, games, template, day, quality, filetype = check_args(sys.argv[1:], channels)
-    folder = f'{template}{day.strftime("%y-%m-%d")}'
+    folder = os.path.join(template, day.strftime("%y-%m-%d"))
     make_folder(template)
     erase_folder(folder)
     os.chdir(folder)
