@@ -23,10 +23,5 @@ A highly customizable and fast command line program to download twitch vods
      -m FILETYPE      the filetype of the vods you want to download (optional, default 
                       is mp4)
 
-     -c CONFIG        the xml file(s) that include the streamers whose vods you want to 
-                      download from, it is a more permanent and shortened version of streamers, 
-                      to choose from this specify all for streamers (optional, default is config.xml 
-                      in current directory)
-
      -h               display this help message and exit
 ```
