@@ -1,6 +1,6 @@
 # vod-dl
-A highly customizable and fast command line program to download twitch vods
-```
+ A command line program to easily download twitch vods, written in Python
+ ```
      Usage:
 
      vod-dl [OPTIONS]
